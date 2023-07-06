@@ -16,4 +16,5 @@ cd frontend
 npm start (React will launch)
 
 cd backend
-npm start 
+npx nodemon 
+(npm start will not update automatically)

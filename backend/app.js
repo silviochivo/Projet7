@@ -2,15 +2,24 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const mongoose = require('mongoose');
+const dotenv = require("dotenv");
 
 const bookRoutes = require('./routes/Book');
 const userRoutes = require('./routes/User');
 
-mongoose.connect('mongodb+srv://SuperUser:u7aHTURkLhLs5GNG@cluster0.7buig2u.mongodb.net/?retryWrites=true&w=majority',
-  { useNewUrlParser: true,
-    useUnifiedTopology: true })
-  .then(() => console.log('Connexion à MongoDB réussie !'))
-  .catch(() => console.log('Connexion à MongoDB échouée !'));
+dotenv.config();
+const mongoUrl = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.7buig2u.mongodb.net/?retryWrites=true&w=majority`;
+  
+async function connect() {
+  try {
+    await mongoose.connect(mongoUrl);
+    console.log('Connexion à MongoDB réussie !');
+  } catch (e) {
+    console.error('Connexion à MongoDB échouée !');
+    console.error(e);
+  }
+}
+connect();
 
 app.use(express.json());
 
