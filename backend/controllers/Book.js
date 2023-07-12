@@ -1,11 +1,12 @@
 const Book = require('../models/Book');
 const fs = require('fs');
+const optimizedImage = require('../middleware/sharp-config');
 
 exports.createBook = (req, res, next) => {
     const bookObject = JSON.parse(req.body.book);
     delete bookObject._id;
     delete bookObject._userId;
-    const imageUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+    const imageUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename.split('.')[0]}optimized.webp`;
     const book = new Book({
         ...bookObject,
         userId: req.auth.userId,
@@ -49,7 +50,7 @@ exports.deleteBook = (req, res, next) => {
 exports.updateBook = (req, res, next) => {
     const bookObject = req.file ? {
         ...JSON.parse(req.body.book),
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename.split('.')[0]}`,
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename.split('.')[0]}optimized.webp`,
     } : { ...req.body };
     delete bookObject._userId;
     Book.findOne({ _id: req.params.id })
