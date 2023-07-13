@@ -34,14 +34,16 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cors());
 app.use(mongoSanitize());
 app.use(helmet());
+app.use(helmet({crossOriginEmbedderPolicy: false }));
+app.use(helmet({crossOriginResourcePolicy: {policy: "same-site"} }));
 
-app.use('/api/books', bookRoutes);
 app.use('/api/auth', userRoutes);
+app.use('/api/books', bookRoutes);
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 module.exports = app;
