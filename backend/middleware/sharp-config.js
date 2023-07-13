@@ -22,8 +22,8 @@ module.exports = async (req, res, next) => {
         // Sharp optimise l'image
         await sharp(filePath)
             .resize({
-                width: 400,
-                height: 500
+                width: 450,
+                height: 550
             })
             .webp({ quality: 80 })
             .toFile(`${filePath.split('.')[0]}.webp`);

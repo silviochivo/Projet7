@@ -82,29 +82,35 @@ exports.rateBook = async (req, res, next) => {
   
     try {
       const book = await Book.findOne({ _id: req.params.id });
-      if (book.ratings.find(rating => rating.userId === user)) {
-        return res.status(401).json({ message: 'Livre déjà noté' });
+  
+      // Vérifier si l'utilisateur a déjà noté le livre
+      const existingRating = book.ratings.find(rating => rating.userId === user);
+  
+      if (existingRating) {
+        // L'utilisateur a déjà noté le livre, mettre à jour sa note (Fonction Indisponible du Front)
+        existingRating.grade = req.body.rating;
+      } else {
+        // L'utilisateur n'a pas encore noté le livre, ajouter une nouvelle note
+        const newRating = {
+          userId: user,
+          grade: req.body.rating,
+        };
+        book.ratings.push(newRating);
       }
   
-      const newRating = {
-        userId: user,
-        grade: req.body.rating,
-        _id: req.body._id
-      };
-  
-      const updatedRatings = [...book.ratings, newRating];
-  
+      // Calculer la nouvelle note moyenne
       const calcAverageRating = ratings => {
         const sumRatings = ratings.reduce((total, rate) => total + rate.grade, 0);
         const average = sumRatings / ratings.length;
         return parseFloat(average.toFixed(2));
       };
   
-      const updateAverageRating = calcAverageRating(updatedRatings);
+      const updateAverageRating = calcAverageRating(book.ratings);
   
+      // Mettre à jour le livre avec la nouvelle note et la note moyenne
       const updatedBook = await Book.findOneAndUpdate(
-        { _id: req.params.id, 'ratings.userId': { $ne: user } },
-        { $push: { ratings: newRating }, averageRating: updateAverageRating },
+        { _id: req.params.id },
+        { ratings: book.ratings, averageRating: updateAverageRating },
         { new: true }
       );
   
@@ -112,4 +118,4 @@ exports.rateBook = async (req, res, next) => {
     } catch (error) {
       res.status(401).json({ error });
     }
-};
+  };

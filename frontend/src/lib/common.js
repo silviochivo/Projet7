@@ -156,6 +156,7 @@ export async function updateBook(data, id) {
     author: data.author,
     year: data.year,
     genre: data.genre,
+    ratings: [{ userId, grade: data.rating }],
   };
   console.log(data.file[0]);
   if (data.file[0]) {
